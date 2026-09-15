@@ -1663,33 +1663,61 @@
            DATE FORMAT
         ========================================== */
 
-        function formatDate(dateString) {
+        /* =========================================
+   DATE FORMAT
+========================================== */
 
-            if (!dateString) {
+function formatDate(dateString) {
 
-                return "";
+    if (!dateString) {
 
-            }
+        return "";
 
+    }
 
-            const date =
-                new Date(dateString);
+    /*
+     * Backend stores timestamps using datetime.utcnow(),
+     * which means the timestamp is in UTC.
+     *
+     * The "Z" below explicitly tells JavaScript
+     * that the timestamp is UTC.
+     *
+     * JavaScript will then automatically convert
+     * it to the user's local timezone.
+     */
 
+    let normalizedDate = String(dateString).trim();
 
-            return date.toLocaleString(
-                "en-US",
-                {
-                    weekday: "short",
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit"
-                }
-            );
+    if (
+        !normalizedDate.endsWith("Z") &&
+        !/[+-]\d{2}:\d{2}$/.test(normalizedDate)
+    ) {
 
+        normalizedDate += "Z";
+
+    }
+
+    const date = new Date(normalizedDate);
+
+    if (Number.isNaN(date.getTime())) {
+
+        return "";
+
+    }
+
+    return date.toLocaleString(
+        "en-US",
+        {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
         }
+    );
 
+}
 
         /* =========================================
            HTML ESCAPE
